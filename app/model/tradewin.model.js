@@ -22,4 +22,4 @@ var tradewinSchema= mongoose.Schema({
      
 });
 
-module.exports = mongoose.model('tradeWin',tradewinSchema,'tradewin.products');
+module.exports = mongoose.model('tradeWin',tradewinSchema,'productdetails');

@@ -53,10 +53,14 @@ module.exports.getProductNames = function(req,res){
 
 module.exports.getOneProducts = function(req,res){
 var product = req.params.name;
+console.log(product);
+
 tradew
 .findOne({name:product})
 .exec(function(err,product){
-  console.log(product)
+  if (err) console.log(err);
+  
+  console.log("product is----",product)
   res
   .status(200)
   .json(product);
