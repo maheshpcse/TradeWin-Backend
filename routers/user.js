@@ -42,4 +42,8 @@ router
 .route('/enquiry')
 .post(productData.postEnquiryData);
 
+router
+.route('/allUsers')
+.get(productData.getAllUsers)
+
 module.exports=router;

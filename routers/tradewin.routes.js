@@ -17,6 +17,13 @@ router
 router
 .route('/product/:name/:categoryId')
 .get(productData.getSubCategory);
+ 
+router
+.route('/product/newproduct/:name/:subname')
+.post(productData.postProductDetails)
 
+router
+.route('/product/uploadProduct')
+.post(productData.productImageUpload)
 
 module.exports = router;

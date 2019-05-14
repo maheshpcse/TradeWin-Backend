@@ -143,10 +143,12 @@ module.exports.login = (req, res) => {
   })
 }
 
-module.exports.getUserInfo = (req, res) => {
+module.exports.getAllUsers = (req, res) => {
   User
     .find()
     .exec((error, doc) => {
+      console.log(doc);
+      
       res
         .status(200)
         .json(doc)
@@ -230,7 +232,7 @@ module.exports.addproducts = (req, res) => {
   console.log(req.body);
   User
     .findById(userId, function (error, user) {
-      if (error) return handleError(error);
+      if (error) return res.send(error);
       user.cartList.push(req.body);
       user.save((err, user) => {
         // if(err) return handleError(err);
@@ -300,61 +302,46 @@ module.exports.updateUserProfile = (req, res) => {
       })
   })
 }
-
 module.exports.fileUploader = (req, res, next) => {
   var userId = req.params.userId;
   // console.log(userId);
   var path = '';
-  upload(req, res, function (err) {
-      if (err) {
-          console.log(err); // An error occurred when uploading
-          return res.status(422).send("an Error occured")
+  upload(req, res,function (err) {
+    if (err) {
+      console.log(err); // An error occurred when uploading
+      return res.status(422).send("an Error occured")
+    }
+    //console.log(req.file) //for complete file data
+    path = req.file.path;
+    //console.log(path);
+    User.findById(userId, function (error, user) {
+      if (error) console.log(error);
+      if (user.profileImg) {
+        deletePath = user.profileImg.substr(22);
+        // console.log("privious:" + deletePath);
+        if (fs.existsSync(deletePath)) {
+          fs.unlinkSync(deletePath);
+          user.profileImg = "http://localhost:4090/" + path;
+          user.save(function (err, user) {
+            if (err) return handleError(err);
+            res.send(user);
+          });
+        } else {
+          console.log("File Does not Exit");
+          user.profileImg = "http://localhost:4090/" + path;
+          user.save(function (err, user) {
+            if (err) return handleError(err);
+            res.send(user);
+          });
+        }
+      } else {
+        console.log("File Does not Exit");
+        user.profileImg = "http://localhost:4090/" + path;
+        user.save(function (err, user) {
+          if (err) return handleError(err);
+          res.send(user);
+        });
       }
-      console.log(req.file) //for complete file data
-      path = req.file.path;
-      console.log("path",path);
-      User.findById(userId, function (error, user) {
-        console.log('---->',user);
-        
-          if (error) console.log(error);
-          if (user.profileImg) {
-              deletePath = user.profileImg.substr(22);
-              deletepath = user.profileImg
-              console.log("privious:" + deletePath);
-              user.profileImg = "http://localhost:4090/"+path;
-              user.save(function (err, user) {
-                  console.log(user);
-                      if (err) return res.status(500).send(err);
-                  res.send(user);
-              });
-              if (fs.existsSync(deletePath)) {
-                  fs.unlinkSync(deletePath);
-                  user.profileImg = "http://localhost:4090/" + path;
-                  user.save(function (err, user) {
-                      if (err) return res.status(500).send(err);
-                      res.send(user);
-                  });
-              } else {
-                  console.log("File Does not Exit");
-                  user.profileImg = "http://localhost:4090/" + path;
-                  
-                  user.save(function (err, user) {
-                      if (err) return res.status(500).send(err);
-                      res.send(user);
-                  });
-              }
-          } else {
-              console.log("File Does not Exit");
-              console.log("after user",user);
-
-              user['profileImg'] = "http://localhost:4090/" + path;
-              user.save(function (err, user) {
-                  if (err) {
-                    res.status(500).send(err)
-                  };
-                  res.send(user);
-              });
-          }
-      })
+    })
   });
 }
