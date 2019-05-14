@@ -4,7 +4,7 @@ const CONFIG = require('../config/tradewin.config');
 require('./user.model.js')
 require('./tradewin.model.js');
 require('./bill.model.js')
-
+require('./enquiry.model')
 const option = {
   user : CONFIG.USER,
   pass :  CONFIG.PASS,
